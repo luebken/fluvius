@@ -1,9 +1,14 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
 	"log"
+	"net/http"
 )
 
 func main() {
-	log.Println("hello world")
+	r := mux.NewRouter()
+	http.Handle("/", r)
+	log.Println("running server")
+	http.ListenAndServe(":8080", nil)
 }
