@@ -1,0 +1,12 @@
+<html>
+  <body>
+    <h1>Hi {{.Title}}</h1>
+
+    Items: 
+    <ul>
+    {{range $index, $element := .Items}} 
+      <li>{{$element}}</li>
+    {{end}}
+    </ul>
+  </body>
+</html>

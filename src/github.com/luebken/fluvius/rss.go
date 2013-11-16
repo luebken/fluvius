@@ -12,6 +12,10 @@ func Fetch() {
 		log.Printf("Error %v\n", err)
 	}
 
+	for item, _ := range feed.ItemMap {
+		AppendItems(item)
+	}
+
 	for {
 		log.Println("updating feed")
 		err = feed.Update()
