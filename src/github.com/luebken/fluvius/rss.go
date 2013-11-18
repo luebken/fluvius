@@ -6,29 +6,48 @@ import (
 	"time"
 )
 
-func Fetch() {
-	feed, err := rss.Fetch("https://feeds.pinboard.in/atom/u:othylmann/")
+func startFetching() {
+	log.Println("start fetching oli")
+	go fetch("https://feeds.pinboard.in/atom/u:othylmann/", "Oliver")
+	log.Println("start fetching matthias")
+	go fetch("https://feeds.pinboard.in/atom/u:luebken/", "Matthias")
+}
+
+//TODO kind of wrong usage of feed library since it stores the items itself
+func fetch(url string, user string) {
+	feed, err := rss.Fetch(url)
 	if err != nil {
 		log.Printf("Error %v\n", err)
 	}
 
-	log.Printf("Got feed: %s\n")
-
+	log.Printf("Got feed %v. Current len(items): %v.\n", feed.Title, len(feed.Items))
 	for _, item := range feed.Items {
-		log.Printf("Appending %s\n", item.Title)
-		log.Printf("\t%s\n", item.Link)
-		log.Printf("\t%s\n\n", item.Content)
-
-		AppendItems(Item{item.Title, item.Content, item.Link, "Oliver", feed.Title})
+		AppendItem(Item{
+			Title:   item.Title,
+			Comment: item.Content,
+			Link:    item.Link,
+			User:    user,
+			Feed:    feed.Title})
 	}
 
 	for {
-		log.Println("updating feed")
+		log.Printf("Updating feed %v. Current len(items): %v.\n", feed.Title, len(feed.Items))
 		err = feed.Update()
 		if err != nil {
 			log.Printf("Error %v\n", err)
-			//TODO handle error.
 		}
-		<-time.After(time.Duration(5 /*seconds*/ * 1e9))
+		log.Printf("Updated feed %v. Now len(items): %v.\n", feed.Title, len(feed.Items))
+		/* TODO need to check wether items are already
+		for _, item := range feed.Items {
+			AppendItem(Item{
+				Title:   item.Title,
+				Comment: item.Content,
+				Link:    item.Link,
+				User:    user,
+				Feed:    feed.Title})
+		}
+		*/
+
+		<-time.After(time.Duration(1 * time.Second))
 	}
 }

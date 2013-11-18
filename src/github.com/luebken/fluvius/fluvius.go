@@ -26,11 +26,11 @@ func main() {
 	http.Handle("/", r)
 
 	log.Println("running server")
-	go Fetch()
+	startFetching()
 	http.ListenAndServe(":8080", nil)
 }
 
-func AppendItems(item Item) {
+func AppendItem(item Item) {
 	items = append(items, item)
 }
 
