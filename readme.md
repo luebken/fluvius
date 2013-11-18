@@ -8,4 +8,5 @@ A site that shows all you relevent streams. First idea: rss streams.
 * go get github.com/luebken/fluvius
 * go install github.com/luebken/fluvius
 * bin/fluvius
+* http://localhost:8080/
 

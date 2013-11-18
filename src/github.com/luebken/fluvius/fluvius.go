@@ -1,3 +1,6 @@
+// main package to start fluvius.
+// fluvius a stream of information
+
 package main
 
 import (
@@ -6,7 +9,16 @@ import (
 	"net/http"
 )
 
-var items []string = []string{"item 1", "item 2"}
+// A fluvius item in the stream
+type Item struct {
+	Title   string
+	Comment string
+	Link    string
+	User    string
+	Feed    string
+}
+
+var items []Item = []Item{}
 
 func main() {
 	r := mux.NewRouter()
@@ -18,10 +30,10 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func AppendItems(newItem string) {
-	items = append(items, newItem)
+func AppendItems(item Item) {
+	items = append(items, item)
 }
 
-func GetItems() []string {
+func GetItems() []Item {
 	return items
 }

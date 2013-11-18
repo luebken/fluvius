@@ -12,8 +12,14 @@ func Fetch() {
 		log.Printf("Error %v\n", err)
 	}
 
-	for item, _ := range feed.ItemMap {
-		AppendItems(item)
+	log.Printf("Got feed: %s\n")
+
+	for _, item := range feed.Items {
+		log.Printf("Appending %s\n", item.Title)
+		log.Printf("\t%s\n", item.Link)
+		log.Printf("\t%s\n\n", item.Content)
+
+		AppendItems(Item{item.Title, item.Content, item.Link, "Oliver", feed.Title})
 	}
 
 	for {
@@ -21,8 +27,8 @@ func Fetch() {
 		err = feed.Update()
 		if err != nil {
 			log.Printf("Error %v\n", err)
-			// handle error.
+			//TODO handle error.
 		}
-		<-time.After(time.Duration(1 /*seconds*/ * 1e9))
+		<-time.After(time.Duration(5 /*seconds*/ * 1e9))
 	}
 }

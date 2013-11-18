@@ -5,7 +5,7 @@
     Items: 
     <ul>
     {{range $index, $element := .Items}} 
-      <li>{{$element}}</li>
+      <li>{{$element.User}}: {{$element.Title}} —— {{$element.Link}}</li>
     {{end}}
     </ul>
   </body>
