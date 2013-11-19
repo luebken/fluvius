@@ -1,4 +1,4 @@
-package main
+package fluvius
 
 import (
 	"html/template"

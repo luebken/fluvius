@@ -1,7 +1,7 @@
 // main package to start fluvius.
 // fluvius a stream of information
 
-package main
+package fluvius
 
 import (
 	"github.com/gorilla/mux"
