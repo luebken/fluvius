@@ -37,6 +37,14 @@ body {
     margin-top: 10px;
 }
 
+#items .item .picture .title {
+    font-size: 16px;
+}
+
+#items .item .picture .title a{
+    color: #000000;
+}
+
 #items .item .meta span {
     font-size: 12px !important;
     line-height: 16px !important;
