@@ -18,5 +18,5 @@ func RootHandler(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Printf("Err %v", err)
 	}
-	t.Execute(response, &Page{Title: "a title", Items: GetItems()})
+	t.Execute(response, &Page{Title: "Fluvius ––– Stream", Items: GetItems()})
 }
