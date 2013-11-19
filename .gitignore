@@ -2,3 +2,4 @@ bin
 pkg
 src/github.com/gorilla
 src/github.com/SlyMarbo
+.DS_Store
