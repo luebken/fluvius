@@ -48,6 +48,6 @@ func fetch(url string, user string) {
 		}
 		*/
 
-		<-time.After(time.Duration(1 * time.Second))
+		<-time.After(time.Duration(60 * time.Second))
 	}
 }
