@@ -28,11 +28,21 @@ func init() {
 	go db.Run()
 }
 
-func (db *database) Items() []Item {
+func (db *database) HotItems() []Item {
+	return db.Items(1)
+}
+
+func (db *database) AllItems() []Item {
+	return db.Items(0)
+}
+
+func (db *database) Items(size int) []Item {
 	result := []Item{}
 	for _, slice := range db.store {
-		for _, value := range slice {
-			result = append(result, value)
+		if len(slice) > size {
+			for _, value := range slice {
+				result = append(result, value)
+			}
 		}
 	}
 	return result
