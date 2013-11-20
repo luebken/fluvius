@@ -7,8 +7,8 @@ import (
 )
 
 type Page struct {
-	Title string
-	Items []Item
+	Title     string
+	Bookmarks []Bookmark
 }
 
 func RootHandler(response http.ResponseWriter, request *http.Request) {
@@ -17,7 +17,7 @@ func RootHandler(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Printf("Err %v", err)
 	}
-	t.Execute(response, &Page{Title: "Fluvius – Hot", Items: db.HotItems()})
+	t.Execute(response, &Page{Title: "Fluvius – Hot", Bookmarks: db.HotBookmarks()})
 }
 
 func AllHandler(response http.ResponseWriter, request *http.Request) {
@@ -26,5 +26,5 @@ func AllHandler(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Printf("Err %v", err)
 	}
-	t.Execute(response, &Page{Title: "Fluvius – All", Items: db.AllItems()})
+	t.Execute(response, &Page{Title: "Fluvius – All", Bookmarks: db.AllBookmarks()})
 }

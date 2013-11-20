@@ -32,12 +32,12 @@ func runHN() {
 	<-time.After(time.Duration(5 * time.Second))
 
 	log.Println("start fetching hn")
-	//link := `http://techcrunch.com/2013/11/06/the-bitcoin-bubble/`
 
 	for {
 		log.Println("Fetching HN")
-		for _, y := range db.HotItems() {
+		for _, y := range db.HotBookmarks() {
 			go fetchHN(y.Link)
+			<-time.After(time.Duration(2 * time.Second))
 
 		}
 		<-time.After(time.Duration(60 * time.Second))

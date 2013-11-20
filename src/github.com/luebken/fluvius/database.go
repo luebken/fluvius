@@ -7,7 +7,7 @@ import (
 var db *database
 
 //TODO better types
-type Item struct {
+type Bookmark struct {
 	Title   string
 	Link    string
 	Comment string
@@ -16,36 +16,36 @@ type Item struct {
 }
 
 type database struct {
-	save  chan Item
-	store map[string][]Item
+	save      chan Bookmark
+	bookmarks map[string][]Bookmark
 }
 
 func init() {
 	db = new(database)
-	db.save = make(chan Item)
+	db.save = make(chan Bookmark)
 	//out.res = make(chan bool)
-	db.store = make(map[string][]Item)
+	db.bookmarks = make(map[string][]Bookmark)
 	go db.Run()
 }
 
-func (db *database) HotItems() []Item {
-	return db.Items(1)
+func (db *database) HotBookmarks() []Bookmark {
+	return db.Bookmarks(1)
 }
 
-func (db *database) AllItems() []Item {
-	return db.Items(0)
+func (db *database) AllBookmarks() []Bookmark {
+	return db.Bookmarks(0)
 }
 
-func (db *database) Items(size int) []Item {
-	result := []Item{}
-	for _, slice := range db.store {
+func (db *database) Bookmarks(size int) []Bookmark {
+	result := []Bookmark{}
+	for _, slice := range db.bookmarks {
 		if len(slice) > size {
 			merged := slice[0]
 			merged.Comment = ""
 			merged.User = ""
-			for _, item := range slice {
-				merged.Comment += item.User + ":" + item.Comment + ", "
-				merged.User += item.User + ", "
+			for _, Bookmark := range slice {
+				merged.Comment += Bookmark.User + ":" + Bookmark.Comment + ", "
+				merged.User += Bookmark.User + ", "
 			}
 			merged.Comment = merged.Comment[:len(merged.Comment)-2]
 			merged.User = merged.User[:len(merged.User)-2]
@@ -56,26 +56,26 @@ func (db *database) Items(size int) []Item {
 }
 
 func (db *database) Run() {
-	var newItem Item
+	var newBookmark Bookmark
 	for {
-		newItem = <-db.save
-		slice, found := db.store[newItem.Link]
-		if !found { //create slice with item
-			db.store[newItem.Link] = []Item{newItem}
-		} else { //create or update item to a slice
+		newBookmark = <-db.save
+		slice, found := db.bookmarks[newBookmark.Link]
+		if !found { //create slice with Bookmark
+			db.bookmarks[newBookmark.Link] = []Bookmark{newBookmark}
+		} else { //create or update Bookmark to a slice
 			updated := false
 			for index, value := range slice {
-				//TODO: When do we want to update an item?
-				if value.User == newItem.User {
-					log.Printf("updating an item. %v \n", newItem)
-					slice[index] = newItem
+				//TODO: When do we want to update an Bookmark?
+				if value.User == newBookmark.User {
+					log.Printf("updating an Bookmark. %v \n", newBookmark)
+					slice[index] = newBookmark
 					updated = true
 				}
 			}
 			if !updated {
-				log.Printf("appending item %v to list \n", newItem)
-				slice = append(slice, newItem)
-				db.store[newItem.Link] = slice
+				log.Printf("appending Bookmark %v to list \n", newBookmark)
+				slice = append(slice, newBookmark)
+				db.bookmarks[newBookmark.Link] = slice
 			}
 		}
 	}
