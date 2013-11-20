@@ -6,15 +6,15 @@ import (
 	"time"
 )
 
-func startFetching() {
+func startFetchingRss() {
 	log.Println("start fetching oli")
-	go fetch("https://feeds.pinboard.in/atom/u:othylmann/", "Oliver")
+	go fetchRss("https://feeds.pinboard.in/atom/u:othylmann/", "Oliver")
 	log.Println("start fetching matthias")
-	go fetch("https://feeds.pinboard.in/atom/u:luebken/", "Matthias")
+	go fetchRss("https://feeds.pinboard.in/atom/u:luebken/", "Matthias")
 }
 
 //TODO kind of wrong usage of feed library since it stores the items itself
-func fetch(url string, user string) {
+func fetchRss(url string, user string) {
 	feed, err := rss.Fetch(url)
 	if err != nil {
 		log.Printf("Error %v\n", err)
