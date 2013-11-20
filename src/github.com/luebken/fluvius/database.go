@@ -40,9 +40,16 @@ func (db *database) Items(size int) []Item {
 	result := []Item{}
 	for _, slice := range db.store {
 		if len(slice) > size {
-			for _, value := range slice {
-				result = append(result, value)
+			merged := slice[0]
+			merged.Comment = ""
+			merged.User = ""
+			for _, item := range slice {
+				merged.Comment += item.User + ":" + item.Comment + ", "
+				merged.User += item.User + ", "
 			}
+			merged.Comment = merged.Comment[:len(merged.Comment)-2]
+			merged.User = merged.User[:len(merged.User)-2]
+			result = append(result, merged)
 		}
 	}
 	return result
