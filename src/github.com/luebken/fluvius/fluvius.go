@@ -21,7 +21,7 @@ func main() {
 	http.Handle("/", r)
 
 	log.Println("running server")
-	//startFetchingRss()
+	startFetchingRss()
 	startFetchingHN()
 	http.ListenAndServe(":8080", nil)
 }

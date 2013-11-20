@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 type HNSearchResponse struct {
@@ -19,18 +20,32 @@ type HNSearchResponseResult struct {
 }
 
 type HNSearchResponseResultItem struct {
-	Id int `json:"id"`
+	Id     int `json:"id"`
+	Points int `json:"points"`
 }
 
 func startFetchingHN() {
-	log.Println("start fetching hn")
-	link := `http://techcrunch.com/2013/11/06/the-bitcoin-bubble/`
+	go runHN()
+}
 
-	go fetchHN(link)
+func runHN() {
+	<-time.After(time.Duration(5 * time.Second))
+
+	log.Println("start fetching hn")
+	//link := `http://techcrunch.com/2013/11/06/the-bitcoin-bubble/`
+
+	for {
+		log.Println("Fetching HN")
+		for _, y := range db.HotItems() {
+			go fetchHN(y.Link)
+
+		}
+		<-time.After(time.Duration(60 * time.Second))
+	}
 }
 
 func fetchHN(hnquery string) {
-
+	log.Printf("HN query for %v", hnquery)
 	hnsearch := `http://api.thriftdb.com/api.hnsearch.com/items/_search?filter%5Bfields%5D%5Btype%5D=submission&q=`
 
 	r, err := http.Get(hnsearch + hnquery)
@@ -41,8 +56,10 @@ func fetchHN(hnquery string) {
 	dec := json.NewDecoder(r.Body)
 	res := new(HNSearchResponse)
 	dec.Decode(&res)
-	log.Printf("Got response %v\n", res)
+	if res.Hits > 0 {
+		link := fmt.Sprintf("https://news.ycombinator.com/item?id=%d", res.Results[0].Item.Id)
+		points := res.Results[0].Item.Points
+		log.Printf("found Points:%v Link:%v", points, link)
+	}
 
-	link := fmt.Sprintf("https://news.ycombinator.com/item?id=%d", res.Results[0].Item.Id)
-	log.Printf("found %v", link)
 }
