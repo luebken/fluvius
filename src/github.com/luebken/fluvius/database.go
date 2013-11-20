@@ -67,13 +67,13 @@ func (db *database) Run() {
 			for index, value := range slice {
 				//TODO: When do we want to update an item?
 				if value.User == newItem.User {
-					log.Printf("updating an item \n")
+					log.Printf("updating an item. %v \n", newItem)
 					slice[index] = newItem
 					updated = true
 				}
 			}
 			if !updated {
-				log.Println("appending new item to list")
+				log.Printf("appending item %v to list \n", newItem)
 				slice = append(slice, newItem)
 				db.store[newItem.Link] = slice
 			}
