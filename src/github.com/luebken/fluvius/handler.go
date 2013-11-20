@@ -1,4 +1,4 @@
-package fluvius
+package main
 
 import (
 	"html/template"
@@ -18,5 +18,5 @@ func RootHandler(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Printf("Err %v", err)
 	}
-	t.Execute(response, &Page{Title: "Fluvius ––– Stream", Items: GetItems()})
+	t.Execute(response, &Page{Title: "Fluvius ––– Stream", Items: db.Items()})
 }

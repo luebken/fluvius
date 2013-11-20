@@ -1,4 +1,4 @@
-package fluvius
+package main
 
 import (
 	rss "github.com/SlyMarbo/rss"
@@ -22,12 +22,12 @@ func fetch(url string, user string) {
 
 	log.Printf("Got feed %v. Current len(items): %v.\n", feed.Title, len(feed.Items))
 	for _, item := range feed.Items {
-		AppendItem(Item{
+		db.save <- Item{
 			Title:   item.Title,
 			Comment: item.Content,
 			Link:    item.Link,
 			User:    user,
-			Feed:    feed.Title})
+			Feed:    feed.Title}
 	}
 
 	for {
