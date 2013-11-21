@@ -1,7 +1,7 @@
 package main
 
 import (
-	rss "github.com/SlyMarbo/rss"
+	rss "github.com/luebken/rss"
 	"log"
 	"time"
 )
