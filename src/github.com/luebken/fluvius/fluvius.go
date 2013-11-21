@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	//"time"
-	config "github.com/luebken/fluvius/config"
+	"github.com/luebken/fluvius/config"
 	"net/http"
 )
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	config "github.com/luebken/fluvius/config"
+	"github.com/luebken/fluvius/config"
 	rss "github.com/luebken/rss"
 	"log"
 	"time"
