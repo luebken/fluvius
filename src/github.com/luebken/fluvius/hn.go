@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const HN_SEARCH = `http://api.thriftdb.com/api.hnsearch.com/items/_search?filter%5Bfields%5D%5Btype%5D=submission&q=`
+
 type HNSearchResponse struct {
 	Hits    int                      `json:"hits"`
 	Time    float64                  `json:"time"`
@@ -30,12 +32,9 @@ func startFetchingHN() {
 
 func runHN() {
 	<-time.After(time.Duration(5 * time.Second))
-
-	log.Println("start fetching hn")
-
 	for {
 		log.Println("Fetching HN")
-		for _, y := range db.HotBookmarks() {
+		for _, y := range db.Bookmarks(1) {
 			go fetchHN(y.Link)
 			<-time.After(time.Duration(2 * time.Second))
 
@@ -44,11 +43,9 @@ func runHN() {
 	}
 }
 
-func fetchHN(hnquery string) {
-	log.Printf("HN query for %v", hnquery)
-	hnsearch := `http://api.thriftdb.com/api.hnsearch.com/items/_search?filter%5Bfields%5D%5Btype%5D=submission&q=`
+func fetchHN(bookmarkLink string) {
 
-	r, err := http.Get(hnsearch + hnquery)
+	r, err := http.Get(HN_SEARCH + bookmarkLink)
 	if err != nil {
 		log.Println(err)
 	}
@@ -59,7 +56,9 @@ func fetchHN(hnquery string) {
 	if res.Hits > 0 {
 		link := fmt.Sprintf("https://news.ycombinator.com/item?id=%d", res.Results[0].Item.Id)
 		points := res.Results[0].Item.Points
-		log.Printf("found Points:%v Link:%v", points, link)
+		karma := Karma{BookmarkLink: bookmarkLink, Link: link, Points: points, Feed: "HN"}
+		log.Printf("found karma:%v", karma)
+		db.saveKarma <- karma
 	}
 
 }

@@ -6,7 +6,7 @@ import (
 
 var db *database
 
-//TODO better types
+//Bookmarks with comments
 type Bookmark struct {
 	Title   string
 	Link    string
@@ -15,31 +15,62 @@ type Bookmark struct {
 	Feed    string
 }
 
+//Other references to bookmarks like HN
+type Karma struct {
+	BookmarkLink string
+	Link         string
+	Points       int
+	Feed         string
+}
+
+//The struct to be displayed on a webpage
+type PageItem struct {
+	Title    string
+	Link     string
+	Comments string
+	Users    string
+	Karmas   []Karma
+}
+
 type database struct {
-	save      chan Bookmark
-	bookmarks map[string][]Bookmark
+	saveBookmark chan Bookmark
+	saveKarma    chan Karma
+	bookmarks    map[string][]Bookmark
+	karmas       map[string][]Karma
 }
 
 func init() {
 	db = new(database)
-	db.save = make(chan Bookmark)
-	//out.res = make(chan bool)
+	db.saveBookmark = make(chan Bookmark)
 	db.bookmarks = make(map[string][]Bookmark)
-	go db.Run()
+	db.saveKarma = make(chan Karma)
+	db.karmas = make(map[string][]Karma)
+	go db.runBookmarks()
+	go db.runKarmas()
 }
 
-func (db *database) HotBookmarks() []Bookmark {
-	return db.Bookmarks(1)
+func (db *database) Items(bookmarksThreshold int) []PageItem {
+
+	log.Printf("getting Items. karmas: %v\n", db.karmas)
+	result := []PageItem{}
+	bookmarks := db.Bookmarks(bookmarksThreshold)
+	for _, bookmark := range bookmarks {
+		item := PageItem{}
+		item.Title = bookmark.Title
+		item.Link = bookmark.Link
+		item.Comments = bookmark.Comment
+		item.Users = bookmark.User
+		item.Karmas = db.karmas[item.Link]
+		result = append(result, item)
+	}
+	return result
 }
 
-func (db *database) AllBookmarks() []Bookmark {
-	return db.Bookmarks(0)
-}
-
-func (db *database) Bookmarks(size int) []Bookmark {
+//TODO: not clean to have the same type for a single bookmark and a merged bookmarks
+func (db *database) Bookmarks(bookmarksThreshold int) []Bookmark {
 	result := []Bookmark{}
 	for _, slice := range db.bookmarks {
-		if len(slice) > size {
+		if len(slice) > bookmarksThreshold {
 			merged := slice[0]
 			merged.Comment = ""
 			merged.User = ""
@@ -55,10 +86,12 @@ func (db *database) Bookmarks(size int) []Bookmark {
 	return result
 }
 
-func (db *database) Run() {
+// =======
+
+func (db *database) runBookmarks() {
 	var newBookmark Bookmark
 	for {
-		newBookmark = <-db.save
+		newBookmark = <-db.saveBookmark
 		slice, found := db.bookmarks[newBookmark.Link]
 		if !found { //create slice with Bookmark
 			db.bookmarks[newBookmark.Link] = []Bookmark{newBookmark}
@@ -67,15 +100,39 @@ func (db *database) Run() {
 			for index, value := range slice {
 				//TODO: When do we want to update an Bookmark?
 				if value.User == newBookmark.User {
-					log.Printf("updating an Bookmark. %v \n", newBookmark)
+					log.Printf("updating a bookmark. %v \n", newBookmark)
 					slice[index] = newBookmark
 					updated = true
 				}
 			}
 			if !updated {
-				log.Printf("appending Bookmark %v to list \n", newBookmark)
+				log.Printf("appending a bookmark %v to list \n", newBookmark)
 				slice = append(slice, newBookmark)
 				db.bookmarks[newBookmark.Link] = slice
+			}
+		}
+	}
+}
+
+func (db *database) runKarmas() {
+	var newKarma Karma
+	for {
+		newKarma = <-db.saveKarma
+		slice, found := db.karmas[newKarma.BookmarkLink]
+		if !found { //create slice
+			db.karmas[newKarma.BookmarkLink] = []Karma{newKarma}
+		} else { //create or update Bookmark to a slice
+			updated := false
+			for index, value := range slice {
+				//TODO: When do we want to update a Karma?
+				if value.Link == newKarma.Link {
+					slice[index] = newKarma
+					updated = true
+				}
+			}
+			if !updated {
+				slice = append(slice, newKarma)
+				db.karmas[newKarma.BookmarkLink] = slice
 			}
 		}
 	}

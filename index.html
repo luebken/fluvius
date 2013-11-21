@@ -49,7 +49,7 @@
 		<div id="main">
 			<div id="items" class="row-fluid">
 				
-				{{range $index, $element := .Items}} 
+				{{range $index, $element := .PageItems}}
 				<div class=" item masonry-brick">
 					<div class="picture">
 						<div class="item-content">
@@ -62,8 +62,16 @@
 								<a href="{{$element.Link}}">
 									{{$element.Link}} 
 								</a></br>
-								{{$element.Comment}} </br>
+								{{$element.Comments}} </br>
 							</div>
+							{{range $index, $karma := $element.Karmas}}
+							<div>
+								HN {{$karma.Points}}:<a href="{{$karma.Link}}">
+									{{$karma.Link}}
+								</a>
+							</div>
+							{{end}}
+
 							<div class="meta">
 								<!-- <span>
 									<i class="icon-calendar"></i>
@@ -71,7 +79,7 @@
 								</span>-->
 								<span>
 									<i class="icon-user"></i>
-									{{$element.User}}
+									{{$element.Users}}
 								</span>
 								<!--<span>
 									<i class="icon-heart-empty"></i>
