@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	//"time"
+	config "github.com/luebken/fluvius/config"
 	"net/http"
 )
 
@@ -21,7 +22,7 @@ func main() {
 	http.Handle("/", r)
 
 	log.Println("running server")
-	startFetchingRss()
+	StartFetchingRss(config.GetRssConfig())
 	startFetchingHN()
 	http.ListenAndServe(":8080", nil)
 }

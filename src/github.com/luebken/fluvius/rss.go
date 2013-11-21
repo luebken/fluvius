@@ -1,20 +1,21 @@
 package main
 
 import (
+	config "github.com/luebken/fluvius/config"
 	rss "github.com/luebken/rss"
 	"log"
 	"time"
 )
 
-func startFetchingRss() {
-	log.Println("start fetching oli")
-	go fetchRss("https://feeds.pinboard.in/atom/u:othylmann/", "Oliver")
-	log.Println("start fetching matthias")
-	go fetchRss("https://feeds.pinboard.in/atom/u:luebken/", "Matthias")
+func StartFetchingRss(configs []config.RSS) {
+	for _, config := range configs {
+		go fetchRss(config.Link, config.User)
+	}
 }
 
 //TODO kind of wrong usage of feed library since it stores the items itself
 func fetchRss(url string, user string) {
+	log.Printf("Fetching %v", url)
 	feed, err := rss.Fetch(url)
 	if err != nil {
 		log.Printf("Error %v\n", err)
