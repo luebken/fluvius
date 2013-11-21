@@ -15,6 +15,9 @@ A site that shows all you relevent streams. First idea: rss streams.
 features
 * check other information on retweets etc.
 * organize via tags
+* just show certain user
+* save to file: http://golang.worleyspace.com/2011/10/blog-post.html
+* use database
 
 dev
 * write tests, cleanup, release
