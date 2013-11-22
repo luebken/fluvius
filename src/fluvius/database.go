@@ -4,7 +4,7 @@ import (
 	"log"
 )
 
-var db *database
+var db *Database
 
 //Bookmarks with comments
 type Bookmark struct {
@@ -32,24 +32,24 @@ type PageItem struct {
 	Karmas   []Karma
 }
 
-type database struct {
-	saveBookmark chan Bookmark
-	saveKarma    chan Karma
+type Database struct {
+	SaveBookmark chan Bookmark
+	SaveKarma    chan Karma
 	bookmarks    map[string][]Bookmark
 	karmas       map[string][]Karma
 }
 
 func init() {
-	db = new(database)
-	db.saveBookmark = make(chan Bookmark)
+	db = new(Database)
+	db.SaveBookmark = make(chan Bookmark)
 	db.bookmarks = make(map[string][]Bookmark)
-	db.saveKarma = make(chan Karma)
+	db.SaveKarma = make(chan Karma)
 	db.karmas = make(map[string][]Karma)
 	go db.runBookmarks()
 	go db.runKarmas()
 }
 
-func (db *database) Items(bookmarksThreshold int) []PageItem {
+func (db *Database) Items(bookmarksThreshold int) []PageItem {
 
 	log.Printf("getting Items. karmas: %v\n", db.karmas)
 	result := []PageItem{}
@@ -67,7 +67,7 @@ func (db *database) Items(bookmarksThreshold int) []PageItem {
 }
 
 //TODO: not clean to have the same type for a single bookmark and a merged bookmarks
-func (db *database) Bookmarks(bookmarksThreshold int) []Bookmark {
+func (db *Database) Bookmarks(bookmarksThreshold int) []Bookmark {
 	result := []Bookmark{}
 	for _, slice := range db.bookmarks {
 		if len(slice) > bookmarksThreshold {
@@ -86,12 +86,11 @@ func (db *database) Bookmarks(bookmarksThreshold int) []Bookmark {
 	return result
 }
 
-// =======
-
-func (db *database) runBookmarks() {
+// private function
+func (db *Database) runBookmarks() {
 	var newBookmark Bookmark
 	for {
-		newBookmark = <-db.saveBookmark
+		newBookmark = <-db.SaveBookmark
 		slice, found := db.bookmarks[newBookmark.Link]
 		if !found { //create slice with Bookmark
 			db.bookmarks[newBookmark.Link] = []Bookmark{newBookmark}
@@ -114,10 +113,11 @@ func (db *database) runBookmarks() {
 	}
 }
 
-func (db *database) runKarmas() {
+// private function
+func (db *Database) runKarmas() {
 	var newKarma Karma
 	for {
-		newKarma = <-db.saveKarma
+		newKarma = <-db.SaveKarma
 		slice, found := db.karmas[newKarma.BookmarkLink]
 		if !found { //create slice
 			db.karmas[newKarma.BookmarkLink] = []Karma{newKarma}

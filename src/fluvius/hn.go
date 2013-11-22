@@ -58,7 +58,7 @@ func fetchHN(bookmarkLink string) {
 		points := res.Results[0].Item.Points
 		karma := Karma{BookmarkLink: bookmarkLink, Link: link, Points: points, Feed: "HN"}
 		log.Printf("found karma:%v", karma)
-		db.saveKarma <- karma
+		db.SaveKarma <- karma
 	}
 
 }
