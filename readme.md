@@ -5,8 +5,8 @@ A site that shows all you relevent streams. First idea: rss streams.
 # development
 
 * source set_fluvius_envs.sh
-* go get github.com/luebken/fluvius
-* go install github.com/luebken/fluvius
+* go get ?
+* go install fluvius
 * bin/fluvius
 * http://localhost:8080/
 

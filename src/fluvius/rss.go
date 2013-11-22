@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/luebken/fluvius/config"
-	rss "github.com/luebken/rss"
+	"fluvius/config"
+	"github.com/luebken/rss"
 	"log"
 	"time"
 )
