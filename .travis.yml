@@ -6,6 +6,7 @@ install:
   - go get github.com/gorilla/context
   - go get github.com/luebken/rss
   - go get github.com/gorilla/mux
+  - go install fluvius
 
 script:
  - go test fluvius -v
