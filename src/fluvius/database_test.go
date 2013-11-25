@@ -1,18 +1,21 @@
 package main
 
 import (
-	"testing"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 	"time"
 )
 
-func TestDatabase(t *testing.T) {
+var _ = Describe("Database", func() {
+	Context("Empty Database", func() {
+		It("should be empty", func() {
+			Expect(len(db.Bookmarks(0))).To(Equal(0))
+		})
+		It("should store one bookmakr", func() {
+			db.SaveBookmark <- Bookmark{"test", "test", "test", "test", "test"}
+			<-time.After(time.Duration(1 * time.Microsecond)) //TODO remove
+			Expect(len(db.Bookmarks(0))).To(Equal(1))
+		})
+	})
 
-	if len(db.Bookmarks(0)) != 0 {
-		t.Fail()
-	}
-	db.SaveBookmark <- Bookmark{"test", "test", "test", "test", "test"}
-	<-time.After(time.Duration(1 * time.Second))
-	if len(db.Bookmarks(0)) != 1 {
-		t.Fail()
-	}
-}
+})
