@@ -4,3 +4,5 @@ src/github.com/gorilla
 src/github.com/SlyMarbo
 .DS_Store
 src/github.com/luebken/rss/
+src/github.com/onsi/ginkgo/
+src/github.com/onsi/gomega/
