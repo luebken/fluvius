@@ -1,6 +1,7 @@
 package config
 
 import (
+	"go/build"
 	"log"
 	"os"
 	"strings"
@@ -24,8 +25,20 @@ func init() {
 	if len(rssConfig) == 0 {
 		panic("couldn't find rss config see readme.md")
 	}
+
 }
 
 func GetRssConfig() []RSS {
 	return rssConfig
+}
+
+func AssetsDir() string {
+	p, err := build.Default.Import("fluvius", "", build.FindOnly)
+	if err != nil {
+		log.Panicf("Can't load files %v\n", err)
+	}
+	assetsDir := p.Dir + "/assets/"
+	log.Printf("Loading templates from:%v\n", assetsDir)
+
+	return assetsDir
 }

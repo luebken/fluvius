@@ -6,12 +6,13 @@ import (
 )
 
 func TestDatabase(t *testing.T) {
-	if len(db.AllItems()) != 0 {
+
+	if len(db.Bookmarks(0)) != 0 {
 		t.Fail()
 	}
-	db.save <- Item{"test", "test", "test", "test", "test"}
+	db.SaveBookmark <- Bookmark{"test", "test", "test", "test", "test"}
 	<-time.After(time.Duration(1 * time.Second))
-	if len(db.AllItems()) != 1 {
+	if len(db.Bookmarks(0)) != 1 {
 		t.Fail()
 	}
 }
