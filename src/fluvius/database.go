@@ -97,6 +97,7 @@ func (db *Database) removeEventListener(listener chan interface{}) {
 	delete(db.eventListener, listener)
 }
 
+//TODO think about the blocking part
 func (db *Database) notifyEventListener(source interface{}) {
 	for listener, _ := range db.eventListener {
 		listener <- source
