@@ -38,7 +38,7 @@ type Database struct {
 	SaveKarma             chan Karma
 	bookmarks             map[string][]Bookmark
 	karmas                map[string][]Karma
-	bookmarkEventListener []chan Bookmark
+	bookmarkEventListener map[chan Bookmark]bool
 }
 
 func init() {
@@ -47,6 +47,7 @@ func init() {
 	db.bookmarks = make(map[string][]Bookmark)
 	db.SaveKarma = make(chan Karma)
 	db.karmas = make(map[string][]Karma)
+	db.bookmarkEventListener = make(map[chan Bookmark]bool)
 	go db.runBookmarks()
 	go db.runKarmas()
 }
@@ -89,11 +90,15 @@ func (db *Database) Bookmarks(bookmarksThreshold int) []Bookmark {
 }
 
 func (db *Database) addBookmarkEventListener(listener chan Bookmark) {
-	db.bookmarkEventListener = append(db.bookmarkEventListener, listener)
+	db.bookmarkEventListener[listener] = true
+}
+
+func (db *Database) removeBookmarkEventListener(listener chan Bookmark) {
+	delete(db.bookmarkEventListener, listener)
 }
 
 func (db *Database) notifyBookmarkEventListener(bookmark Bookmark) {
-	for _, listener := range db.bookmarkEventListener {
+	for listener, _ := range db.bookmarkEventListener {
 		listener <- bookmark
 	}
 }
