@@ -39,6 +39,7 @@ type Database struct {
 	bookmarks             map[string][]Bookmark
 	karmas                map[string][]Karma
 	bookmarkEventListener map[chan Bookmark]bool
+	karmaEventListener    map[chan Karma]bool
 }
 
 func init() {
@@ -48,6 +49,7 @@ func init() {
 	db.SaveKarma = make(chan Karma)
 	db.karmas = make(map[string][]Karma)
 	db.bookmarkEventListener = make(map[chan Bookmark]bool)
+	db.karmaEventListener = make(map[chan Karma]bool)
 	go db.runBookmarks()
 	go db.runKarmas()
 }
@@ -103,6 +105,20 @@ func (db *Database) notifyBookmarkEventListener(bookmark Bookmark) {
 	}
 }
 
+func (db *Database) addKarmaEventListener(listener chan Karma) {
+	db.karmaEventListener[listener] = true
+}
+
+func (db *Database) removeKarmaEventListener(listener chan Karma) {
+	delete(db.karmaEventListener, listener)
+}
+
+func (db *Database) notifyKarmaEventListener(karma Karma) {
+	for listener, _ := range db.karmaEventListener {
+		listener <- karma
+	}
+}
+
 // private function
 func (db *Database) runBookmarks() {
 	var newBookmark Bookmark
@@ -153,5 +169,7 @@ func (db *Database) runKarmas() {
 				db.karmas[newKarma.BookmarkLink] = slice
 			}
 		}
+		db.notifyKarmaEventListener(newKarma)
 	}
+
 }
