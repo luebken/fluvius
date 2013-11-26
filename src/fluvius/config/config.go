@@ -14,6 +14,8 @@ type RSS struct {
 
 var rssConfig []RSS
 
+var assetsDir string
+
 func init() {
 	log.Println("Initializing config")
 	s := os.Getenv("FLUVIUS_RSS_FEEDS")
@@ -33,12 +35,13 @@ func GetRssConfig() []RSS {
 }
 
 func AssetsDir() string {
-	p, err := build.Default.Import("fluvius", "", build.FindOnly)
-	if err != nil {
-		log.Panicf("Can't load files %v\n", err)
+	if assetsDir == "" {
+		p, err := build.Default.Import("fluvius", "", build.FindOnly)
+		if err != nil {
+			log.Panicf("Can't load files %v\n", err)
+		}
+		assetsDir = p.Dir + "/assets/"
+		log.Printf("Loading templates from:%v\n", assetsDir)
 	}
-	assetsDir := p.Dir + "/assets/"
-	log.Printf("Loading templates from:%v\n", assetsDir)
-
 	return assetsDir
 }
