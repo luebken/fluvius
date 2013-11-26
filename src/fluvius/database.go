@@ -4,6 +4,7 @@ import (
 	"log"
 )
 
+//TODO: rename into repository? ddd?
 var db *Database
 
 //Bookmarks with comments
@@ -33,10 +34,11 @@ type PageItem struct {
 }
 
 type Database struct {
-	SaveBookmark chan Bookmark
-	SaveKarma    chan Karma
-	bookmarks    map[string][]Bookmark
-	karmas       map[string][]Karma
+	SaveBookmark          chan Bookmark
+	SaveKarma             chan Karma
+	bookmarks             map[string][]Bookmark
+	karmas                map[string][]Karma
+	bookmarkEventListener []chan Bookmark
 }
 
 func init() {
@@ -86,6 +88,16 @@ func (db *Database) Bookmarks(bookmarksThreshold int) []Bookmark {
 	return result
 }
 
+func (db *Database) addBookmarkEventListener(listener chan Bookmark) {
+	db.bookmarkEventListener = append(db.bookmarkEventListener, listener)
+}
+
+func (db *Database) notifyBookmarkEventListener(bookmark Bookmark) {
+	for _, listener := range db.bookmarkEventListener {
+		listener <- bookmark
+	}
+}
+
 // private function
 func (db *Database) runBookmarks() {
 	var newBookmark Bookmark
@@ -110,6 +122,7 @@ func (db *Database) runBookmarks() {
 				db.bookmarks[newBookmark.Link] = slice
 			}
 		}
+		db.notifyBookmarkEventListener(newBookmark)
 	}
 }
 

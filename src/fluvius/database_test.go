@@ -3,7 +3,6 @@ package main
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"time"
 )
 
 var _ = Describe("Database", func() {
@@ -11,10 +10,15 @@ var _ = Describe("Database", func() {
 		It("should be empty", func() {
 			Expect(len(db.Bookmarks(0))).To(Equal(0))
 		})
-		It("should store one bookmakr", func() {
-			db.SaveBookmark <- Bookmark{"test", "test", "test", "test", "test"}
-			<-time.After(time.Duration(1 * time.Microsecond)) //TODO remove
+		It("should store one bookmark", func(done Done) {
+
+			bm := Bookmark{"test", "test", "test", "test", "test"}
+			listener := make(chan Bookmark)
+			db.addBookmarkEventListener(listener)
+			db.SaveBookmark <- bm
+			Expect(<-listener).To(Equal(bm))
 			Expect(len(db.Bookmarks(0))).To(Equal(1))
+			close(done)
 		})
 	})
 
