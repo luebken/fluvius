@@ -34,13 +34,11 @@ type PageItem struct {
 }
 
 type Database struct {
-	SaveBookmark          chan Bookmark
-	SaveKarma             chan Karma
-	bookmarks             map[string][]Bookmark
-	karmas                map[string][]Karma
-	bookmarkEventListener map[chan Bookmark]bool
-	karmaEventListener    map[chan Karma]bool
-	eventListener         map[chan interface{}]bool
+	SaveBookmark  chan Bookmark
+	SaveKarma     chan Karma
+	bookmarks     map[string][]Bookmark
+	karmas        map[string][]Karma
+	eventListener map[chan interface{}]bool
 }
 
 func init() {
@@ -49,8 +47,7 @@ func init() {
 	db.bookmarks = make(map[string][]Bookmark)
 	db.SaveKarma = make(chan Karma)
 	db.karmas = make(map[string][]Karma)
-	db.bookmarkEventListener = make(map[chan Bookmark]bool)
-	db.karmaEventListener = make(map[chan Karma]bool)
+	db.eventListener = make(map[chan interface{}]bool)
 	go db.runBookmarks()
 	go db.runKarmas()
 }
@@ -92,44 +89,17 @@ func (db *Database) Bookmarks(bookmarksThreshold int) []Bookmark {
 	return result
 }
 
-func (db *Database) addEventListener(listener interface{}) {
-	switch listener.(type) {
-	case chan Bookmark:
-		db.bookmarkEventListener[listener.(chan Bookmark)] = true
-	case chan Karma:
-		db.karmaEventListener[listener.(chan Karma)] = true
-	default:
-		log.Panic("unkown source")
-	}
+func (db *Database) addEventListener(listener chan interface{}) {
+	db.eventListener[listener] = true
 }
 
-func (db *Database) removeEventListener(listener interface{}) {
-	switch listener.(type) {
-	case chan Bookmark:
-		delete(db.bookmarkEventListener, listener.(chan Bookmark))
-		//		db.bookmarkEventListener[listener.(chan Bookmark)] = true
-	case chan Karma:
-		//		db.karmaEventListener[listener.(chan Karma)] = true
-		delete(db.karmaEventListener, listener.(chan Karma))
-
-	default:
-		log.Panic("unkown source")
-	}
-
+func (db *Database) removeEventListener(listener chan interface{}) {
+	delete(db.eventListener, listener)
 }
 
 func (db *Database) notifyEventListener(source interface{}) {
-	switch source.(type) {
-	case Bookmark:
-		for listener, _ := range db.bookmarkEventListener {
-			listener <- source.(Bookmark)
-		}
-	case Karma:
-		for listener, _ := range db.karmaEventListener {
-			listener <- source.(Karma)
-		}
-	default:
-		log.Panic("unkown source")
+	for listener, _ := range db.eventListener {
+		listener <- source
 	}
 }
 

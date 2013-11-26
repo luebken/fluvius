@@ -16,7 +16,7 @@ var _ = Describe("Database", func() {
 			Expect(len(db.Bookmarks(0))).To(Equal(0))
 		})
 		It("should store one bookmark", func(done Done) {
-			listener := make(chan Bookmark)
+			listener := make(chan interface{})
 			db.addEventListener(listener)
 			db.SaveBookmark <- bm1
 			Expect(<-listener).To(Equal(bm1))
@@ -25,7 +25,7 @@ var _ = Describe("Database", func() {
 			close(done)
 		})
 		It("should store a second bookmark", func(done Done) {
-			listener := make(chan Bookmark)
+			listener := make(chan interface{})
 			db.addEventListener(listener)
 			db.SaveBookmark <- bm2
 			Expect(<-listener).To(Equal(bm2))
@@ -41,7 +41,7 @@ var _ = Describe("Database", func() {
 		})
 		It("should store one karma", func(done Done) {
 			Expect(len(db.Bookmarks(0))).To(Equal(2))
-			listener := make(chan Karma)
+			listener := make(chan interface{})
 			db.addEventListener(listener)
 			db.SaveKarma <- ka1
 			Expect(<-listener).To(Equal(ka1))
@@ -53,7 +53,7 @@ var _ = Describe("Database", func() {
 			Expect(len(db.Bookmarks(0))).To(Equal(2))
 			Expect(len(db.karmas)).To(Equal(1))
 
-			listener := make(chan Karma)
+			listener := make(chan interface{})
 			db.addEventListener(listener)
 			db.SaveKarma <- ka2
 			Expect(<-listener).To(Equal(ka2))
