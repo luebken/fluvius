@@ -17,20 +17,20 @@ var _ = Describe("Database", func() {
 		})
 		It("should store one bookmark", func(done Done) {
 			listener := make(chan Bookmark)
-			db.addBookmarkEventListener(listener)
+			db.addEventListener(listener)
 			db.SaveBookmark <- bm1
 			Expect(<-listener).To(Equal(bm1))
 			Expect(len(db.Bookmarks(0))).To(Equal(1))
-			db.removeBookmarkEventListener(listener)
+			db.removeEventListener(listener)
 			close(done)
 		})
 		It("should store a second bookmark", func(done Done) {
 			listener := make(chan Bookmark)
-			db.addBookmarkEventListener(listener)
+			db.addEventListener(listener)
 			db.SaveBookmark <- bm2
 			Expect(<-listener).To(Equal(bm2))
 			Expect(len(db.Bookmarks(0))).To(Equal(2))
-			db.removeBookmarkEventListener(listener)
+			db.removeEventListener(listener)
 			close(done)
 		})
 	})
@@ -42,11 +42,11 @@ var _ = Describe("Database", func() {
 		It("should store one karma", func(done Done) {
 			Expect(len(db.Bookmarks(0))).To(Equal(2))
 			listener := make(chan Karma)
-			db.addKarmaEventListener(listener)
+			db.addEventListener(listener)
 			db.SaveKarma <- ka1
 			Expect(<-listener).To(Equal(ka1))
 			Expect(len(db.karmas)).To(Equal(1))
-			db.removeKarmaEventListener(listener)
+			db.removeEventListener(listener)
 			close(done)
 		})
 		It("should store a second karma", func(done Done) {
@@ -54,11 +54,11 @@ var _ = Describe("Database", func() {
 			Expect(len(db.karmas)).To(Equal(1))
 
 			listener := make(chan Karma)
-			db.addKarmaEventListener(listener)
+			db.addEventListener(listener)
 			db.SaveKarma <- ka2
 			Expect(<-listener).To(Equal(ka2))
 			Expect(len(db.karmas)).To(Equal(2))
-			db.removeKarmaEventListener(listener)
+			db.removeEventListener(listener)
 			close(done)
 		})
 	})

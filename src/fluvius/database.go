@@ -40,6 +40,7 @@ type Database struct {
 	karmas                map[string][]Karma
 	bookmarkEventListener map[chan Bookmark]bool
 	karmaEventListener    map[chan Karma]bool
+	eventListener         map[chan interface{}]bool
 }
 
 func init() {
@@ -91,31 +92,44 @@ func (db *Database) Bookmarks(bookmarksThreshold int) []Bookmark {
 	return result
 }
 
-func (db *Database) addBookmarkEventListener(listener chan Bookmark) {
-	db.bookmarkEventListener[listener] = true
-}
-
-func (db *Database) removeBookmarkEventListener(listener chan Bookmark) {
-	delete(db.bookmarkEventListener, listener)
-}
-
-func (db *Database) notifyBookmarkEventListener(bookmark Bookmark) {
-	for listener, _ := range db.bookmarkEventListener {
-		listener <- bookmark
+func (db *Database) addEventListener(listener interface{}) {
+	switch listener.(type) {
+	case chan Bookmark:
+		db.bookmarkEventListener[listener.(chan Bookmark)] = true
+	case chan Karma:
+		db.karmaEventListener[listener.(chan Karma)] = true
+	default:
+		log.Panic("unkown source")
 	}
 }
 
-func (db *Database) addKarmaEventListener(listener chan Karma) {
-	db.karmaEventListener[listener] = true
+func (db *Database) removeEventListener(listener interface{}) {
+	switch listener.(type) {
+	case chan Bookmark:
+		delete(db.bookmarkEventListener, listener.(chan Bookmark))
+		//		db.bookmarkEventListener[listener.(chan Bookmark)] = true
+	case chan Karma:
+		//		db.karmaEventListener[listener.(chan Karma)] = true
+		delete(db.karmaEventListener, listener.(chan Karma))
+
+	default:
+		log.Panic("unkown source")
+	}
+
 }
 
-func (db *Database) removeKarmaEventListener(listener chan Karma) {
-	delete(db.karmaEventListener, listener)
-}
-
-func (db *Database) notifyKarmaEventListener(karma Karma) {
-	for listener, _ := range db.karmaEventListener {
-		listener <- karma
+func (db *Database) notifyEventListener(source interface{}) {
+	switch source.(type) {
+	case Bookmark:
+		for listener, _ := range db.bookmarkEventListener {
+			listener <- source.(Bookmark)
+		}
+	case Karma:
+		for listener, _ := range db.karmaEventListener {
+			listener <- source.(Karma)
+		}
+	default:
+		log.Panic("unkown source")
 	}
 }
 
@@ -143,7 +157,7 @@ func (db *Database) runBookmarks() {
 				db.bookmarks[newBookmark.Link] = slice
 			}
 		}
-		db.notifyBookmarkEventListener(newBookmark)
+		db.notifyEventListener(newBookmark)
 	}
 }
 
@@ -169,7 +183,7 @@ func (db *Database) runKarmas() {
 				db.karmas[newKarma.BookmarkLink] = slice
 			}
 		}
-		db.notifyKarmaEventListener(newKarma)
+		db.notifyEventListener(newKarma)
 	}
 
 }
