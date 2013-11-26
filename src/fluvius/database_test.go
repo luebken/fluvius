@@ -9,6 +9,7 @@ var bm1 = Bookmark{"Google", "http://google.de", "A Comment", "Oli", "a feed"}
 var bm1b = Bookmark{"Google", "http://google.de", "Another Comment", "Matthias", "matthias feed"}
 var bm2 = Bookmark{"Bing", "http://bing.de", "A second comment", "Mattes", "another feed"}
 var ka1 = Karma{"http://google.de", "https://news.ycombinator.com/item?id=1", 1, "test"}
+var ka1b = Karma{"http://google.de", "https://idontknow.de/item?id=1", 1, "test"}
 var ka2 = Karma{"http://bing.de", "http://www.reddit.com/r/technology/comments/1rffrf", 1, "test"}
 
 var _ = Describe("Database", func() {
@@ -59,7 +60,7 @@ var _ = Describe("Database", func() {
 			Expect(len(db.karmas)).To(Equal(0))
 		})
 		It("should store one karma", func(done Done) {
-			Expect(len(db.Bookmarks(0))).To(Equal(2))
+			Expect(len(db.karmas)).To(Equal(0))
 			listener := make(chan interface{})
 			db.addEventListener(listener)
 			db.SaveKarma <- ka1
@@ -78,6 +79,26 @@ var _ = Describe("Database", func() {
 			Expect(<-listener).To(Equal(ka2))
 			Expect(len(db.karmas)).To(Equal(2))
 			db.removeEventListener(listener)
+			close(done)
+		})
+	})
+
+	Context("Item", func() {
+		It("should update an item if a second karma is saved", func(done Done) {
+			Expect(len(db.Items(0))).To(Equal(2))
+			Expect(db.Items(1)[0].Title).To(Equal(bm1.Title))
+			Expect(db.Items(1)[0].Karmas).To(Equal([]Karma{ka1}))
+
+			listener := make(chan interface{})
+			db.addEventListener(listener)
+			db.SaveKarma <- ka1b
+			Expect(<-listener).To(Equal(ka1b))
+			db.removeEventListener(listener)
+
+			Expect(len(db.Items(0))).To(Equal(2))
+			Expect(db.Items(1)[0].Title).To(Equal(bm1.Title))
+			Expect(db.Items(1)[0].Karmas).To(Equal([]Karma{ka1, ka1b}))
+
 			close(done)
 		})
 	})

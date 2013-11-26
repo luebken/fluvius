@@ -53,8 +53,6 @@ func init() {
 }
 
 func (db *Database) Items(bookmarksThreshold int) []PageItem {
-
-	log.Printf("getting Items. karmas: %v\n", db.karmas)
 	result := []PageItem{}
 	bookmarks := db.Bookmarks(bookmarksThreshold)
 	for _, bookmark := range bookmarks {
