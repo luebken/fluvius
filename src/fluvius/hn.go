@@ -43,9 +43,12 @@ func runHN() {
 	}
 }
 
-func fetchHN(bookmarkLink string) {
+var httpGet = func(bookmarkLink string) (*http.Response, error) {
+	return new(http.Response), nil
+}
 
-	r, err := http.Get(HN_SEARCH + bookmarkLink)
+func fetchHN(bookmarkLink string) {
+	r, err := httpGet(HN_SEARCH + bookmarkLink)
 	if err != nil {
 		log.Println(err)
 	}
@@ -53,6 +56,7 @@ func fetchHN(bookmarkLink string) {
 	dec := json.NewDecoder(r.Body)
 	res := new(HNSearchResponse)
 	dec.Decode(&res)
+	log.Printf("res: %v\n", res)
 	if res.Hits > 0 {
 		link := fmt.Sprintf("https://news.ycombinator.com/item?id=%d", res.Results[0].Item.Id)
 		points := res.Results[0].Item.Points
