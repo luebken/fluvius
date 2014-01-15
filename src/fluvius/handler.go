@@ -30,6 +30,6 @@ func RootHandler(response http.ResponseWriter, request *http.Request) {
 
 func AllHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Content-Type", "text/html")
-	tmpl["index.html"].Execute(response, &Page{Title: "Fluvius – All", PageItems: db.Items(0)})
+	tmpl["all.html"].Execute(response, &Page{Title: "Fluvius – All", PageItems: db.Items(0)})
 
 }
