@@ -78,6 +78,9 @@ body {
     width: 100%;
 }
 
+.picture {
+  overflow: hidden
+}
 
 .navbar-inner {
   box-shadow: 0px 5px 10px #999 !important;
