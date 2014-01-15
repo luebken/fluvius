@@ -43,6 +43,7 @@ func runHN() {
 	}
 }
 
+//wraped in a function to make it mockable
 var httpGet = func(bookmarkLink string) (*http.Response, error) {
 	return http.Get(HN_SEARCH + bookmarkLink)
 }
