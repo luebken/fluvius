@@ -34,10 +34,9 @@ func runHN() {
 	<-time.After(time.Duration(5 * time.Second))
 	for {
 		log.Println("Fetching HN")
-		for _, y := range db.Bookmarks(1) {
+		for _, y := range db.Bookmarks(0) {
 			go fetchHN(y.Link)
 			<-time.After(time.Duration(2 * time.Second))
-
 		}
 		<-time.After(time.Duration(60 * time.Second))
 	}
