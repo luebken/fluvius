@@ -5,7 +5,20 @@ import (
 	"github.com/ChimeraCoder/anaconda"
 )
 
-func runTwitter(consumerKey string, consumerSecret string, accessToken string, accessTokenSecret string) {
+func StartFetchingTwitter(consumerKey string,
+	consumerSecret string,
+	accessToken string,
+	accessTokenSecret string) {
+
+	go runTwitter(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+}
+
+func runTwitter(
+	consumerKey string,
+	consumerSecret string,
+	accessToken string,
+	accessTokenSecret string) {
+
 	anaconda.SetConsumerKey(consumerKey)
 	anaconda.SetConsumerSecret(consumerSecret)
 	api := anaconda.NewTwitterApi(accessToken, accessTokenSecret)

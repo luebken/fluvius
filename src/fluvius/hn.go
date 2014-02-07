@@ -26,7 +26,7 @@ type HNSearchResponseResultItem struct {
 	Points int `json:"points"`
 }
 
-func startFetchingHN() {
+func StartFetchingHN() {
 	go runHN()
 }
 

@@ -23,8 +23,8 @@ func main() {
 
 	log.Println("running server")
 	StartFetchingRss(config.GetRssConfig())
-	startFetchingHN()
-	go runTwitter(
+	StartFetchingHN()
+	StartFetchingTwitter(
 		config.GetTwitterConsumerKey(),
 		config.GetTwitterConsumerSecret(),
 		config.GetTwitterAccessToken(),
