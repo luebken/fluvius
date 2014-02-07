@@ -5,6 +5,7 @@ A site that shows all you relevent streams. First idea: rss streams.
 # development
 
 * source set_fluvius_envs.sh
+* cd src/fluvius/ && go get
 * go install fluvius
 * bin/fluvius
 * http://localhost:8080/
