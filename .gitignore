@@ -1,3 +1,11 @@
 bin
 pkg
 .DS_Store
+src/github.com/ChimeraCoder/anaconda/
+src/github.com/ChimeraCoder/tokenbucket/
+src/github.com/garyburd/go-oauth/
+src/github.com/gorilla/context/
+src/github.com/gorilla/mux/
+src/github.com/luebken/rss/
+src/github.com/onsi/ginkgo/
+src/github.com/onsi/gomega/
