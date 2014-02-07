@@ -22,8 +22,8 @@ func main() {
 	http.Handle("/", r)
 
 	log.Println("running server")
-	//StartFetchingRss(config.GetRssConfig())
-	//startFetchingHN()
+	StartFetchingRss(config.GetRssConfig())
+	startFetchingHN()
 	go runTwitter(
 		config.GetTwitterConsumerKey(),
 		config.GetTwitterConsumerSecret(),
