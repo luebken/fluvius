@@ -34,6 +34,22 @@ func GetRssConfig() []RSS {
 	return rssConfig
 }
 
+func GetTwitterConsumerKey() string {
+	return os.Getenv("TWITTER_CONSUMER_KEY")
+}
+
+func GetTwitterConsumerSecret() string {
+	return os.Getenv("TWITTER_CONSUMER_SECRET")
+}
+
+func GetTwitterAccessToken() string {
+	return os.Getenv("TWITTER_ACCESS_TOKEN")
+}
+
+func GetTwitterAccessTokenSecret() string {
+	return os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
+}
+
 func AssetsDir() string {
 	if assetsDir == "" {
 		p, err := build.Default.Import("fluvius", "", build.FindOnly)
